@@ -15,6 +15,7 @@
 @synthesize service = _service;
 @synthesize label = _label;
 @synthesize passwordData = _passwordData;
+@synthesize modificationDate = _modificationDate;
 
 #ifdef SAMKEYCHAIN_ACCESS_GROUP_AVAILABLE
 @synthesize accessGroup = _accessGroup;
@@ -140,6 +141,7 @@
 	CFTypeRef result = NULL;
 	NSMutableDictionary *query = [self query];
 	[query setObject:@YES forKey:(__bridge id)kSecReturnData];
+	[query setObject:@YES forKey:(__bridge id)kSecReturnAttributes];
 	[query setObject:(__bridge id)kSecMatchLimitOne forKey:(__bridge id)kSecMatchLimit];
 	status = SecItemCopyMatching((__bridge CFDictionaryRef)query, &result);
 
@@ -150,6 +152,11 @@
 		return NO;
 	}
 
+	NSDictionary* dict = (__bridge NSDictionary*)result;
+  _modificationDate = dict[(__bridge NSDate *)kSecAttrModificationDate];
+	_passwordData = dict[(__bridge NSData *)kSecValueData];
+  CFRelease(result);
+	
 	self.passwordData = (__bridge_transfer NSData *)result;
 	return YES;
 }
