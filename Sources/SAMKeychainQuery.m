@@ -152,12 +152,12 @@
 		return NO;
 	}
 
-	NSDictionary* dict = (__bridge NSDictionary*)result;
-  _modificationDate = dict[(__bridge NSDate *)kSecAttrModificationDate];
-	_passwordData = dict[(__bridge NSData *)kSecValueData];
-  CFRelease(result);
-	
-	self.passwordData = (__bridge_transfer NSData *)result;
+       CFTypeRef value = CFDictionaryGetValue(result, kSecAttrModificationDate);
+       _modificationDate = [(__bridge NSDate*)value copy];
+       value = CFDictionaryGetValue(result, kSecValueData);
+       _passwordData = [(__bridge NSData*)value copy];
+       CFRelease(result);
+
 	return YES;
 }
 
