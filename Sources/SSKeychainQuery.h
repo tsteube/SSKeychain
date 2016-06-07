@@ -71,6 +71,10 @@ typedef NS_ENUM(NSUInteger, SSKeychainQuerySynchronizationMode) {
  */
 @property (nonatomic, copy) NSString *password;
 
+/**
+ * Last modification timestamp of the found entry.
+ */
+@property (nonatomic, copy, readonly) NSDate *modificationDate;
 
 ///------------------------
 /// @name Saving & Deleting

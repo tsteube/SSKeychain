@@ -15,6 +15,7 @@
 @synthesize service = _service;
 @synthesize label = _label;
 @synthesize passwordData = _passwordData;
+@synthesize modificationDate = _modificationDate;
 
 #ifdef SSKEYCHAIN_ACCESS_GROUP_AVAILABLE
 @synthesize accessGroup = _accessGroup;
@@ -140,6 +141,7 @@
 	CFTypeRef result = NULL;
 	NSMutableDictionary *query = [self query];
 	[query setObject:@YES forKey:(__bridge id)kSecReturnData];
+	[query setObject:@YES forKey:(__bridge id)kSecReturnAttributes];
 	[query setObject:(__bridge id)kSecMatchLimitOne forKey:(__bridge id)kSecMatchLimit];
 	status = SecItemCopyMatching((__bridge CFDictionaryRef)query, &result);
 
@@ -150,7 +152,12 @@
 		return NO;
 	}
 
-	self.passwordData = (__bridge_transfer NSData *)result;
+  CFTypeRef value = CFDictionaryGetValue(result, kSecAttrModificationDate);
+  _modificationDate = [(__bridge NSDate*)value copy];
+  value = CFDictionaryGetValue(result, kSecValueData);
+  _passwordData = [(__bridge NSData*)value copy];
+  CFRelease(result);
+
 	return YES;
 }
 
